@@ -2,9 +2,6 @@
 
 namespace FunnyRouletteConsole.Rendering
 {
-    /// <summary>
-    /// Responsible for rendering the simulation.
-    /// </summary>
     public class Renderer
     {
         private readonly RouletteWheel _wheel;
@@ -19,9 +16,10 @@ namespace FunnyRouletteConsole.Rendering
         public void Render()
         {
             Console.Clear();
-
             _wheel.Draw();
             _ball.Draw();
+
+            Console.WriteLine($"Ball Trajectory: {_ball.Position:F2}°, Velocity: {_ball.AngularVelocity:F2}°/s");
         }
     }
 }

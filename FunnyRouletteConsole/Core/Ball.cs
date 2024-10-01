@@ -88,40 +88,59 @@ namespace FunnyRouletteConsole.Core
                 double ballY = BallRadius * Math.Sin(angleRad);
                 var ballPosition = new Vector2D(ballX, ballY);
 
-                // Check collision
-                double distance = Vector2D.DistancePointToSegment(ballPosition, fretStart, fretEnd);
-                if (distance <= Radius)
+                // Enhanced collision detection using Circle-Line intersection
+                if (CircleLineCollision(ballPosition, Radius, fretStart, fretEnd, out Vector2D collisionPoint))
                 {
-                    HandleCollision(fret, fretStart, fretEnd, deltaTime);
+                    HandleCollision(fret, collisionPoint, deltaTime);
                     Console.WriteLine($"[Ball] Collision with fret at angle: {fret.Angle:F2}°");
                     break;
                 }
             }
         }
 
-        private void HandleCollision(Fret fret, Vector2D fretStart, Vector2D fretEnd, double deltaTime)
+        private bool CircleLineCollision(Vector2D circleCenter, double circleRadius, Vector2D lineStart, Vector2D lineEnd, out Vector2D collisionPoint)
         {
-            // Calculate normal vector
-            Vector2D fretVector = fretEnd - fretStart;
-            Vector2D normal = new Vector2D(-fretVector.Y, fretVector.X).Normalize();
+            // Get the line segment's direction vector
+            Vector2D lineDirection = lineEnd - lineStart;
+            double lineLength = lineDirection.Length();
+            lineDirection = lineDirection.Normalize();
+
+            // Vector from lineStart to circle center
+            Vector2D startToCircle = circleCenter - lineStart;
+            double projectionLength = startToCircle.Dot(lineDirection);
+
+            // Clamp the projection length to the length of the line segment
+            projectionLength = Math.Clamp(projectionLength, 0, lineLength);
+            collisionPoint = lineStart + lineDirection * projectionLength;
+
+            // Calculate distance from circle center to the projection point (collision point)
+            double distanceToLine = (circleCenter - collisionPoint).Length();
+
+            // Check if the distance is less than or equal to the circle's radius
+            return distanceToLine <= circleRadius;
+        }
+
+        private void HandleCollision(Fret fret, Vector2D collisionPoint, double deltaTime)
+        {
+            // Calculate normal vector at the collision point
+            Vector2D normal = (PositionToCartesian() - collisionPoint).Normalize();
 
             // Convert angular velocity to linear velocity
             double ballSpeed = AngularVelocity * (Math.PI / 180.0) * BallRadius; // Convert deg/s to units/s
-            Vector2D velocity = new Vector2D(-ballSpeed * Math.Sin(Position * Math.PI / 180.0),
-                                              ballSpeed * Math.Cos(Position * Math.PI / 180.0));
+            Vector2D velocity = VelocityFromAngle(Position, ballSpeed);
 
             // Decompose velocity into normal and tangential components
             double vNormal = velocity.Dot(normal);
             Vector2D vNormalVec = normal * vNormal;
             Vector2D vTangentVec = velocity - vNormalVec;
 
-            // Apply coefficient of restitution
-            double restitutionCoefficient = 0.3; // e.g., 0.3 for inelastic collision
+            // Apply coefficient of restitution for normal component
+            double restitutionCoefficient = 0.4; // Adjusted for a more elastic collision
             vNormalVec = vNormalVec * (-restitutionCoefficient);
 
-            // Apply friction to tangential component
-            double frictionCoefficient = 0.1; // Adjust as needed
-            vTangentVec = vTangentVec * (1 - frictionCoefficient);
+            // Apply friction coefficient for tangential component
+            double slidingFrictionCoefficient = 0.2; // Higher friction for sliding
+            vTangentVec = vTangentVec * (1 - slidingFrictionCoefficient);
 
             // Calculate new velocity
             Vector2D newVelocity = vNormalVec + vTangentVec;
@@ -130,9 +149,23 @@ namespace FunnyRouletteConsole.Core
             double newSpeed = newVelocity.Length();
             AngularVelocity = (newSpeed / BallRadius) * (180.0 / Math.PI); // Convert back to deg/s
 
-            // Update position based on new velocity direction
+            // Apply torque to the wheel based on impact force
+            ApplyTorqueToWheel(vNormalVec, collisionPoint);
+
+            // Update position and velocity
             double newAngleRad = Math.Atan2(newVelocity.Y, newVelocity.X);
             Position = (newAngleRad * 180.0 / Math.PI + 360) % 360;
+        }
+
+        private void ApplyTorqueToWheel(Vector2D collisionForce, Vector2D collisionPoint)
+        {
+            // Calculate torque based on collision force and point relative to wheel center
+            Vector2D forceDirection = collisionPoint - _wheel.GetCenter();
+            double torque = forceDirection.Cross(collisionForce); // 2D cross product
+
+            // Apply torque to wheel's angular velocity change
+            double angularAcceleration = torque / _wheel.MomentOfInertia;
+            _wheel.AngularVelocity += angularAcceleration;
         }
 
         private void ApplyRollingResistance(double deltaTime)
@@ -143,6 +176,22 @@ namespace FunnyRouletteConsole.Core
             AngularVelocity -= angularDeceleration * deltaTime;
             if (AngularVelocity < 0)
                 AngularVelocity = 0;
+        }
+
+        private Vector2D PositionToCartesian()
+        {
+            double angleRad = Position * Math.PI / 180.0;
+            double x = BallRadius * Math.Cos(angleRad);
+            double y = BallRadius * Math.Sin(angleRad);
+            return new Vector2D(x, y);
+        }
+
+        private Vector2D VelocityFromAngle(double angleDegrees, double speed)
+        {
+            double angleRad = angleDegrees * Math.PI / 180.0;
+            double vx = -speed * Math.Sin(angleRad);
+            double vy = speed * Math.Cos(angleRad);
+            return new Vector2D(vx, vy);
         }
 
         public void Draw()

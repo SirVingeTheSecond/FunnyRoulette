@@ -46,17 +46,16 @@ namespace FunnyRouletteConsole.Core
 
         public void Update(double deltaTime)
         {
-            if (IsStopped)
-                return;
+            if (IsStopped) return;
 
             elapsedTime += deltaTime;
-
             AngularVelocity = InitialAngularVelocity * Math.Exp(-DecayCoefficient * elapsedTime);
 
             if (AngularVelocity <= StoppingThreshold)
             {
                 AngularVelocity = 0;
                 IsStopped = true;
+                PhysicsLogger.Log("[Wheel] The wheel has stopped.", PhysicsLogger.LogLevel.Info);
             }
 
             Position += AngularVelocity * deltaTime;
@@ -65,7 +64,7 @@ namespace FunnyRouletteConsole.Core
 
         public void Draw()
         {
-            Console.WriteLine($"Wheel Position: {Position:F2}°, Angular Velocity: {AngularVelocity:F2}°/s");
+            PhysicsLogger.Log($"Wheel Position: {Position:F2}°, Angular Velocity: {AngularVelocity:F2}°/s", PhysicsLogger.LogLevel.Debug);
         }
 
         public int GetSlotAtPosition(double ballPosition)

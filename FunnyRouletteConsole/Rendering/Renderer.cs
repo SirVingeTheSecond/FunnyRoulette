@@ -1,4 +1,5 @@
 ﻿using FunnyRouletteConsole.Core;
+using FunnyRouletteConsole.Physics;
 
 namespace FunnyRouletteConsole.Rendering
 {
@@ -19,7 +20,7 @@ namespace FunnyRouletteConsole.Rendering
             _wheel.Draw();
             _ball.Draw();
 
-            Console.WriteLine($"Ball Trajectory: {_ball.Position:F2}°, Velocity: {_ball.AngularVelocity:F2}°/s");
+            PhysicsLogger.Log($"Ball Trajectory: {_ball.Position:F2}°, Velocity: {_ball.AngularVelocity:F2}°/s", PhysicsLogger.LogLevel.Info);
         }
     }
 }

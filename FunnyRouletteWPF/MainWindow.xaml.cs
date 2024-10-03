@@ -3,17 +3,16 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Windows.Threading;
-using FunnyRouletteCore.Core;
 
 namespace FunnyRouletteWPF
 {
     public partial class MainWindow : Window
     {
-        private RouletteWheel _wheel;
-        private Ball _ball;
+        private RouletteSimulation _simulation;
         private DispatcherTimer _timer;
 
         // UI elements
+        private Ellipse _wheelEllipse;
         private Ellipse _ballEllipse;
         private Line[] _fretLines;
 
@@ -28,27 +27,22 @@ namespace FunnyRouletteWPF
 
         private void InitializeSimulation()
         {
-            // Initialize physics simulation objects
-            _wheel = new RouletteWheel
-            {
-                Position = 0,
-                InitialAngularVelocity = 30, // Set initial angular velocity
-                AngularVelocity = 30,
-                DecayCoefficient = 0.05, // Friction/decay coefficient for the wheel
-            };
-
-            _ball = new Ball(_wheel)
-            {
-                Position = 0,
-                InitialAngularVelocity = 180, // Set initial angular velocity of the ball
-                AngularVelocity = 180,
-                DecayCoefficient = 0.3, // Friction/decay coefficient for the ball
-            };
+            _simulation = new RouletteSimulation();
         }
 
         private void SetupVisualElements()
         {
-            // Create visual elements for the ball and frets
+            // Create visual elements for the wheel
+            _wheelEllipse = new Ellipse
+            {
+                Width = 400,
+                Height = 400,
+                Stroke = Brushes.Black,
+                StrokeThickness = 2
+            };
+            SimulationCanvas.Children.Add(_wheelEllipse);
+
+            // Create visual elements for the ball
             _ballEllipse = new Ellipse
             {
                 Width = 10,
@@ -58,13 +52,13 @@ namespace FunnyRouletteWPF
             SimulationCanvas.Children.Add(_ballEllipse);
 
             // Create visual elements for frets
-            _fretLines = new Line[_wheel.NumberOfSlots];
-            for (int i = 0; i < _wheel.NumberOfSlots; i++)
+            _fretLines = new Line[37]; // Assuming 37 slots for European roulette
+            for (int i = 0; i < _fretLines.Length; i++)
             {
                 _fretLines[i] = new Line
                 {
                     Stroke = Brushes.Black,
-                    StrokeThickness = 2
+                    StrokeThickness = 1
                 };
                 SimulationCanvas.Children.Add(_fretLines[i]);
             }
@@ -84,8 +78,7 @@ namespace FunnyRouletteWPF
         {
             // Update physics state
             double deltaTime = 0.016; // Fixed deltaTime for simplicity (16 ms)
-            _ball.Update(deltaTime);
-            _wheel.Update(deltaTime);
+            _simulation.Update(deltaTime);
 
             // Update visual positions
             UpdateVisualPositions();
@@ -93,24 +86,28 @@ namespace FunnyRouletteWPF
 
         private void UpdateVisualPositions()
         {
+            var (wheelPosition, ballX, ballY) = _simulation.GetState();
+
             // Get the center of the canvas
             double centerX = SimulationCanvas.ActualWidth / 2;
             double centerY = SimulationCanvas.ActualHeight / 2;
 
-            // Update the ball's position based on its current angle
-            Vector2D ballPosition = _ball.PositionToCartesian();
-            Canvas.SetLeft(_ballEllipse, centerX + ballPosition.X * 100 - _ballEllipse.Width / 2);
-            Canvas.SetTop(_ballEllipse, centerY + ballPosition.Y * 100 - _ballEllipse.Height / 2);
+            // Update the wheel's rotation
+            RotateTransform wheelRotation = new RotateTransform(wheelPosition, centerX, centerY);
+            _wheelEllipse.RenderTransform = wheelRotation;
 
-            // Update fret lines based on their positions
-            for (int i = 0; i < _wheel.Frets.Count; i++)
+            // Update the ball's position
+            Canvas.SetLeft(_ballEllipse, centerX + ballX * 200 - _ballEllipse.Width / 2);
+            Canvas.SetTop(_ballEllipse, centerY + ballY * 200 - _ballEllipse.Height / 2);
+
+            // Update fret lines
+            for (int i = 0; i < _fretLines.Length; i++)
             {
-                var (start, end) = _wheel.Frets[i].GetLinePoints(_wheel.Position);
-
-                _fretLines[i].X1 = centerX + start.X * 100;
-                _fretLines[i].Y1 = centerY + start.Y * 100;
-                _fretLines[i].X2 = centerX + end.X * 100;
-                _fretLines[i].Y2 = centerY + end.Y * 100;
+                double angle = (i * 360.0 / _fretLines.Length + wheelPosition) * Math.PI / 180.0;
+                _fretLines[i].X1 = centerX + 180 * Math.Cos(angle);
+                _fretLines[i].Y1 = centerY + 180 * Math.Sin(angle);
+                _fretLines[i].X2 = centerX + 200 * Math.Cos(angle);
+                _fretLines[i].Y2 = centerY + 200 * Math.Sin(angle);
             }
         }
     }

@@ -3,9 +3,6 @@ using FunnyRouletteCore.Rendering;
 
 namespace FunnyRouletteCore.Core
 {
-    /// <summary>
-    /// Represents the roulette wheel in the simulation.
-    /// </summary>
     public class RouletteWheel : IPhysicsObject, IRenderable
     {
         public double Position { get; set; }
@@ -51,7 +48,6 @@ namespace FunnyRouletteCore.Core
             elapsedTime += deltaTime;
             AngularVelocity = InitialAngularVelocity * Math.Exp(-DecayCoefficient * elapsedTime);
 
-            // It ain't much, but it's honest work 
             if (AngularVelocity <= StoppingThreshold)
             {
                 AngularVelocity = 0;
@@ -61,11 +57,6 @@ namespace FunnyRouletteCore.Core
 
             Position += AngularVelocity * deltaTime;
             Position %= 360;
-        }
-
-        public void Draw()
-        {
-            PhysicsLogger.Log($"Wheel Position: {Position:F2}°, Angular Velocity: {AngularVelocity:F2}°/s", PhysicsLogger.LogLevel.Debug);
         }
 
         public int GetSlotAtPosition(double ballPosition)
@@ -85,6 +76,11 @@ namespace FunnyRouletteCore.Core
         public Vector2D GetCenter()
         {
             return new Vector2D(0, 0);
+        }
+
+        public void Draw()
+        {
+            PhysicsLogger.Log($"Wheel Position: {Position:F2}°, Angular Velocity: {AngularVelocity:F2}°/s", PhysicsLogger.LogLevel.Debug);
         }
     }
 }

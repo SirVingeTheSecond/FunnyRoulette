@@ -2,7 +2,7 @@
 using FunnyRouletteCore.Physics;
 
 namespace FunnyRouletteCore.Rendering
-{
+{ 
     public class Renderer
     {
         private readonly RouletteWheel _wheel;
@@ -16,11 +16,10 @@ namespace FunnyRouletteCore.Rendering
 
         public void Render()
         {
-            Console.Clear();
+            PhysicsLogger.Log("--- Rendering Frame ---", PhysicsLogger.LogLevel.Debug);
             _wheel.Draw();
             _ball.Draw();
-
-            PhysicsLogger.Log($"Ball Trajectory: {_ball.Position:F2}°, Velocity: {_ball.AngularVelocity:F2}°/s", PhysicsLogger.LogLevel.Info);
+            PhysicsLogger.Log("----------------------", PhysicsLogger.LogLevel.Debug);
         }
     }
 }

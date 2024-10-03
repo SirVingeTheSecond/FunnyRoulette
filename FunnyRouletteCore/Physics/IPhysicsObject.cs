@@ -1,4 +1,4 @@
-﻿namespace FunnyRouletteConsole.Physics
+﻿namespace FunnyRouletteCore.Physics
 {
     /// <summary>
     /// Interface for physics objects in the simulation.

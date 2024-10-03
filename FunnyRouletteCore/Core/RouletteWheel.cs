@@ -1,7 +1,7 @@
-﻿using FunnyRouletteConsole.Physics;
-using FunnyRouletteConsole.Rendering;
+﻿using FunnyRouletteCore.Physics;
+using FunnyRouletteCore.Rendering;
 
-namespace FunnyRouletteConsole.Core
+namespace FunnyRouletteCore.Core
 {
     /// <summary>
     /// Represents the roulette wheel in the simulation.
@@ -51,6 +51,7 @@ namespace FunnyRouletteConsole.Core
             elapsedTime += deltaTime;
             AngularVelocity = InitialAngularVelocity * Math.Exp(-DecayCoefficient * elapsedTime);
 
+            // It ain't much, but it's honest work 
             if (AngularVelocity <= StoppingThreshold)
             {
                 AngularVelocity = 0;

@@ -1,7 +1,7 @@
-﻿using FunnyRouletteConsole.Physics;
-using FunnyRouletteConsole.Rendering;
+﻿using FunnyRouletteCore.Physics;
+using FunnyRouletteCore.Rendering;
 
-namespace FunnyRouletteConsole.Core
+namespace FunnyRouletteCore.Core
 {
     /// <summary>
     /// Represents the ball in the roulette simulation.

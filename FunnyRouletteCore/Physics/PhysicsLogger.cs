@@ -1,4 +1,4 @@
-﻿namespace FunnyRouletteConsole.Physics;
+﻿namespace FunnyRouletteCore.Physics;
 
 public class PhysicsLogger
 {

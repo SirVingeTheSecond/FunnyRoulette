@@ -1,4 +1,4 @@
-﻿namespace FunnyRouletteConsole.Core
+﻿namespace FunnyRouletteCore.Core
 {
     /// <summary>
     /// Represents a fret (divider) on the roulette wheel.

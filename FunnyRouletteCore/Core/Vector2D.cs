@@ -1,7 +1,7 @@
-﻿namespace FunnyRouletteConsole.Core
+﻿namespace FunnyRouletteCore.Core
 {
     /// <summary>
-    /// Represents a 2D vector for calculations.
+    /// Represents a 2D vector.
     /// </summary>
     public struct Vector2D
     {

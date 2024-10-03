@@ -1,7 +1,7 @@
-﻿using FunnyRouletteConsole.Core;
-using FunnyRouletteConsole.Physics;
+﻿using FunnyRouletteCore.Core;
+using FunnyRouletteCore.Physics;
 
-namespace FunnyRouletteConsole.Rendering
+namespace FunnyRouletteCore.Rendering
 {
     public class Renderer
     {

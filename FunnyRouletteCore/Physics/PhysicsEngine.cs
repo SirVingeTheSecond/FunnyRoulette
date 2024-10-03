@@ -1,4 +1,4 @@
-﻿namespace FunnyRouletteConsole.Physics
+﻿namespace FunnyRouletteCore.Physics
 {
     /// <summary>
     /// Manages the physics simulation.

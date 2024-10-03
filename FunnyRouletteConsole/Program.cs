@@ -1,6 +1,6 @@
-﻿using FunnyRouletteConsole.Core;
-using FunnyRouletteConsole.Physics;
-using FunnyRouletteConsole.Rendering;
+﻿using FunnyRouletteCore.Core;
+using FunnyRouletteCore.Physics;
+using FunnyRouletteCore.Rendering;
 
 namespace FunnyRouletteConsole
 {

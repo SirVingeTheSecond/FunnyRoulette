@@ -1,4 +1,4 @@
-﻿namespace FunnyRouletteConsole.Rendering
+﻿namespace FunnyRouletteCore.Rendering
 {
     /// <summary>
     /// Interface for renderable objects.

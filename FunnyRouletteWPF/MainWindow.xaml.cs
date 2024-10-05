@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
@@ -15,6 +16,7 @@ namespace FunnyRouletteWPF
         private Ellipse _wheelEllipse;
         private Ellipse _ballEllipse;
         private Line[] _fretLines;
+        private Button _actionButton;
 
         public MainWindow()
         {
@@ -62,6 +64,34 @@ namespace FunnyRouletteWPF
                 };
                 SimulationCanvas.Children.Add(_fretLines[i]);
             }
+
+            // Create action button
+            _actionButton = new Button
+            {
+                Content = "Spin",
+                Width = 100,
+                Height = 30,
+                Margin = new Thickness(0, 10, 0, 0)
+            };
+            _actionButton.Click += ActionButton_Click;
+            Grid.SetRow(_actionButton, 1);
+            MainGrid.Children.Add(_actionButton);
+        }
+
+        private void ActionButton_Click(object sender, RoutedEventArgs e)
+        {
+            switch (_simulation.CurrentState)
+            {
+                case SimulationState.Idle:
+                    _simulation.StartSpin();
+                    _actionButton.Content = "Spinning...";
+                    _actionButton.IsEnabled = false;
+                    break;
+                case SimulationState.Ended:
+                    _simulation.Reset();
+                    _actionButton.Content = "Spin";
+                    break;
+            }
         }
 
         private void StartSimulationLoop()
@@ -82,6 +112,13 @@ namespace FunnyRouletteWPF
 
             // Update visual positions
             UpdateVisualPositions();
+
+            // Update UI based on simulation state
+            if (_simulation.CurrentState == SimulationState.Ended && _actionButton.Content.ToString() != "Reset")
+            {
+                _actionButton.Content = "Reset";
+                _actionButton.IsEnabled = true;
+            }
         }
 
         private void UpdateVisualPositions()

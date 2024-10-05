@@ -28,7 +28,15 @@
         public static Vector2D operator +(Vector2D a, Vector2D b) => new Vector2D(a.X + b.X, a.Y + b.Y);
         public static Vector2D operator *(Vector2D v, double scalar) => new Vector2D(v.X * scalar, v.Y * scalar);
         public static Vector2D operator *(double scalar, Vector2D v) => new Vector2D(v.X * scalar, v.Y * scalar);
-
+        
         public static double Distance(Vector2D a, Vector2D b) => (a - b).Length();
+        
+        public static Vector2D Lerp(Vector2D a, Vector2D b, double t)
+        {
+            return new Vector2D(
+                a.X + (b.X - a.X) * t,
+                a.Y + (b.Y - a.Y) * t
+            );
+        }
     }
 }

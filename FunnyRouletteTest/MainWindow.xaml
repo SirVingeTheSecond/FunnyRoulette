@@ -1,0 +1,85 @@
+﻿<Window x:Class="FunnyRouletteWPF.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:FunnyRouletteTest"
+        Title="Funny Roulette" Height="600" Width="800"
+        Background="#1E1E1E">
+    <Window.Resources>
+        <!-- Base Button Style -->
+        <Style x:Key="BaseButtonStyle" TargetType="Button">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="18"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Width" Value="100"/>
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="Margin" Value="10"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Border" Background="{TemplateBinding Background}" 
+                                CornerRadius="5" BorderThickness="0">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Border" Property="Background" Value="{DynamicResource ButtonMouseOverBackground}" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Border" Property="Background" Value="{DynamicResource ButtonPressedBackground}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Spin Button Style -->
+        <Style x:Key="SpinButtonStyle" TargetType="Button" BasedOn="{StaticResource BaseButtonStyle}">
+            <Setter Property="Background" Value="#4CAF50"/>
+            <Style.Resources>
+                <SolidColorBrush x:Key="ButtonMouseOverBackground" Color="#43A047"/>
+                <SolidColorBrush x:Key="ButtonPressedBackground" Color="#388E3C"/>
+            </Style.Resources>
+        </Style>
+
+        <!-- Reset Button Style -->
+        <Style x:Key="ResetButtonStyle" TargetType="Button" BasedOn="{StaticResource BaseButtonStyle}">
+            <Setter Property="Background" Value="#F44336"/>
+            <Style.Resources>
+                <SolidColorBrush x:Key="ButtonMouseOverBackground" Color="#E53935"/>
+                <SolidColorBrush x:Key="ButtonPressedBackground" Color="#D32F2F"/>
+            </Style.Resources>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Title -->
+        <TextBlock Text="Funny Roulette" FontSize="24" FontWeight="Bold" Foreground="#FFFFFF" 
+                   HorizontalAlignment="Center" Margin="0,10,0,10"/>
+
+        <!-- Roulette Wheel Container -->
+        <Border Grid.Row="1" Background="#2E2E2E" CornerRadius="10" Margin="20">
+            <Grid>
+                <Canvas x:Name="WheelCanvas" ClipToBounds="True" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <Canvas x:Name="BallCanvas" ClipToBounds="True" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Grid>
+        </Border>
+
+        <!-- Control Panel -->
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,10">
+            <Button x:Name="SpinButton" Content="SPIN" Style="{StaticResource SpinButtonStyle}"/>
+            <Button x:Name="ResetButton" Content="RESET" Style="{StaticResource ResetButtonStyle}"/>
+        </StackPanel>
+
+        <!-- Message Display -->
+        <TextBlock x:Name="MessageTextBlock" Grid.Row="3" Text="" Foreground="White" FontSize="16" 
+                   HorizontalAlignment="Center" Margin="0,0,0,10"/>
+    </Grid>
+</Window>
